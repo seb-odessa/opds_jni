@@ -49,25 +49,14 @@ pub extern "C" fn Java_Wrapper_getAuthorsNextCharByPrefix(
     prefix: JString,
 ) -> jobject {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
-    let prefix: String = env
-        .get_string(&prefix)
-        .expect("Couldn't get java string!")
-        .into();
 
-    match api.authors_next_char_by_prefix(&prefix) {
-        Ok(list) => {
-            JavaObject::try_from((&mut env, list))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-        Err(err) => {
-            JavaObject::try_from((&mut env, err))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-    }
+    env.get_string(&prefix)
+        .map_err(|e| anyhow::anyhow!("{e}"))
+        .and_then(|str| Ok(Into::<String>::into(str)))
+        .and_then(|arg| api.authors_next_char_by_prefix(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
 }
 
 #[no_mangle]
@@ -78,25 +67,14 @@ pub extern "C" fn Java_Wrapper_getSeriesNextCharByPrefix(
     prefix: JString,
 ) -> jobject {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
-    let prefix: String = env
-        .get_string(&prefix)
-        .expect("Couldn't get java string!")
-        .into();
 
-    match api.series_next_char_by_prefix(&prefix) {
-        Ok(list) => {
-            JavaObject::try_from((&mut env, list))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-        Err(err) => {
-            JavaObject::try_from((&mut env, err))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-    }
+    env.get_string(&prefix)
+        .map_err(|e| anyhow::anyhow!("{e}"))
+        .and_then(|str| Ok(Into::<String>::into(str)))
+        .and_then(|arg| api.series_next_char_by_prefix(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
 }
 
 #[no_mangle]
@@ -107,25 +85,14 @@ pub extern "C" fn Java_Wrapper_getAuthorsByLastName(
     name: JString,
 ) -> jobject {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
-    let name: String = env
-        .get_string(&name)
-        .expect("Couldn't get java string!")
-        .into();
 
-    match api.authors_by_last_name(&name) {
-        Ok(list) => {
-            JavaObject::try_from((&mut env, list))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-        Err(err) => {
-            JavaObject::try_from((&mut env, err))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-    }
+    env.get_string(&name)
+        .map_err(|e| anyhow::anyhow!("{e}"))
+        .and_then(|str| Ok(Into::<String>::into(str)))
+        .and_then(|arg| api.authors_by_last_name(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
 }
 
 #[no_mangle]
@@ -140,6 +107,11 @@ pub extern "C" fn Java_Wrapper_getSeriesBySerieName(
         .get_string(&name)
         .expect("Couldn't get java string!")
         .into();
+
+    // api.series_by_serie_name(&name)
+    // .and_then(|list| JavaObject::try_from((&mut env, list)))
+    // .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+    // .ptr
 
     match api.series_by_serie_name(&name) {
         Ok(series) => {
@@ -199,29 +171,10 @@ pub extern "C" fn Java_Wrapper_getAuthorsByGenreId(
 ) -> jobject {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
 
-    // let res = api
-    //     .authors_by_genre_id(id as u32)
-    //     .and_then(|list| JavaObject::try_from((&mut env, list)));
-
-    // match res {
-    //     Ok(obj) => obj.ptr,
-    //     Err(err) =>
-    // }
-
-    match api.authors_by_genre_id(id as u32) {
-        Ok(list) => {
-            JavaObject::try_from((&mut env, list))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-        Err(err) => {
-            JavaObject::try_from((&mut env, err))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-    }
+    api.authors_by_genre_id(id as u32)
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
 }
 
 #[no_mangle]
@@ -266,23 +219,12 @@ pub extern "C" fn Java_Wrapper_getGenresByMeta(
     name: JString,
 ) -> jobject {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
-    let name: String = env
-        .get_string(&name)
-        .expect("Couldn't get java string!")
-        .into();
 
-    match api.genres_by_meta(&name) {
-        Ok(list) => {
-            JavaObject::try_from((&mut env, list))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-        Err(err) => {
-            JavaObject::try_from((&mut env, err))
-                .inspect_err(|e| println!("{e}"))
-                .unwrap()
-                .ptr
-        }
-    }
+    env.get_string(&name)
+        .map_err(|e| anyhow::anyhow!("{e}"))
+        .and_then(|str| Ok(Into::<String>::into(str)))
+        .and_then(|arg| api.genres_by_meta(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
 }
