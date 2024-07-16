@@ -1,0 +1,13 @@
+[package]
+name = "opds_jni"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = "1.0"
+jni = "0.21"
+opds_api = { git = "https://github.com/seb-odessa/opds_api.git", branch = "main", package = "opds_api" }
