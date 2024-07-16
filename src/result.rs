@@ -3,7 +3,7 @@ use jni::{
     sys::jobject,
     JNIEnv,
 };
-use opds_api::{Author, Value};
+use opds_api::{Author, Book, Serie, Value};
 
 pub struct JavaObject {
     pub ptr: jobject,
@@ -23,6 +23,7 @@ impl JavaObject {
 
         Ok(Self { ptr })
     }
+
     fn error(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
         let args = [JValueGen::from(&object)];
         let result = env.find_class("Wrapper$Result")?;
@@ -36,6 +37,11 @@ impl JavaObject {
             .l()?;
 
         Ok(Self { ptr })
+    }
+
+    fn string<'a>(env: &mut JNIEnv<'a>, item: &String) -> anyhow::Result<JObject<'a>> {
+        let obj = JObject::from(env.new_string(item.clone())?);
+        Ok(obj)
     }
 
     fn value<'a>(env: &mut JNIEnv<'a>, item: &Value) -> anyhow::Result<JObject<'a>> {
@@ -59,6 +65,58 @@ impl JavaObject {
         ];
         let class = env.find_class("Author")?;
         let obj = env.new_object(class, "(LValue;LValue;LValue;)V", &args)?;
+        Ok(obj)
+    }
+
+    fn serie<'a>(env: &mut JNIEnv<'a>, item: &Serie) -> anyhow::Result<JObject<'a>> {
+        let id = item.id as i32;
+        let name = Self::string(env, &item.name)?;
+        let count = item.count as i32;
+        let author = Self::author(env, &item.author)?;
+
+        let args = [
+            JValueGen::from(id),
+            JValueGen::from(&name),
+            JValueGen::from(count),
+            JValueGen::from(&author),
+        ];
+        let class = env.find_class("Serie")?;
+        let obj = env.new_object(class, "(ILjava/lang/String;ILAuthor;)V", &args)?;
+        Ok(obj)
+    }
+
+    fn book<'a>(env: &mut JNIEnv<'a>, item: &Book) -> anyhow::Result<JObject<'a>> {
+        let id = item.id as i32;
+        let name = Self::string(env, &item.name)?;
+        let sid = if let Some(sid) = item.sid {
+            sid as i32
+        } else {
+            0
+        };
+        let idx = if let Some(idx) = item.idx {
+            idx as i32
+        } else {
+            0
+        };
+        let author = Self::author(env, &item.author)?;
+        let size = item.size as i32;
+        let added = Self::string(env, &item.added)?;
+
+        let args = [
+            JValueGen::from(id),
+            JValueGen::from(&name),
+            JValueGen::from(sid),
+            JValueGen::from(idx),
+            JValueGen::from(&author),
+            JValueGen::from(size),
+            JValueGen::from(&added),
+        ];
+        let class = env.find_class("Book")?;
+        let obj = env.new_object(
+            class,
+            "(ILjava/lang/String;IILAuthor;ILjava/lang/String;)V",
+            &args,
+        )?;
         Ok(obj)
     }
 }
@@ -112,6 +170,38 @@ impl TryFrom<(&mut JNIEnv<'_>, Vec<Author>)> for JavaObject {
 
         for item in items.iter() {
             let obj = Self::author(env, item)?;
+            let args = [JValueGen::from(&obj)];
+            env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
+        }
+
+        Self::success(env, list)
+    }
+}
+impl TryFrom<(&mut JNIEnv<'_>, Vec<Serie>)> for JavaObject {
+    type Error = anyhow::Error;
+
+    fn try_from((env, items): (&mut JNIEnv<'_>, Vec<Serie>)) -> anyhow::Result<Self> {
+        let class = env.find_class("java/util/ArrayList")?;
+        let mut list = env.new_object(class, "()V", &[])?;
+
+        for item in items.iter() {
+            let obj = Self::serie(env, item)?;
+            let args = [JValueGen::from(&obj)];
+            env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
+        }
+
+        Self::success(env, list)
+    }
+}
+impl TryFrom<(&mut JNIEnv<'_>, Vec<Book>)> for JavaObject {
+    type Error = anyhow::Error;
+
+    fn try_from((env, items): (&mut JNIEnv<'_>, Vec<Book>)) -> anyhow::Result<Self> {
+        let class = env.find_class("java/util/ArrayList")?;
+        let mut list = env.new_object(class, "()V", &[])?;
+
+        for item in items.iter() {
+            let obj = Self::book(env, item)?;
             let args = [JValueGen::from(&obj)];
             env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
         }

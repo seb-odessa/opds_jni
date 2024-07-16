@@ -23,19 +23,12 @@ public class Main {
         assert_eq("api.getAuthorsByLastName()", api.getAuthorsByLastName("Кейн"),
                 List.of("Адель Кейн", "Рэйчел Кейн"));
 
-        {
-            Wrapper.Result<List<String>> result = api.getSeriesBySerieName("Кровь на воздух");
-            assert_true("result.isSuccess()", result.isSuccess());
-            assert_eq("api.getSeriesBySerieName()", result.getValue(),
-                    List.of("Кровь на воздух [Павел Сергеевич Иевлев] (2)"));
-        }
-        {
-            Wrapper.Result<List<String>> result = api.getSeriesByGenreId(24);
-            assert_true("result.isSuccess()", result.isSuccess());
-            assert_eq("api.getSeriesByGenreId()", result.getValue(),
-                    List.of("Варяг [Мазин] [Александр Владимирович Мазин] (1)",
-                            "Восток (РИПОЛ) [Владимир Вячеславович Малявин] (1)"));
-        }
+        assert_eq("api.getSeriesBySerieName()", api.getSeriesBySerieName("Кровь на воздух"),
+                List.of("Кровь на воздух [Павел Сергеевич Иевлев] (2)"));
+
+        assert_eq("api.getSeriesByGenreId()", api.getSeriesByGenreId(24),
+                List.of("Варяг [Мазин] [Александр Владимирович Мазин] (1)",
+                        "Восток (РИПОЛ) [Владимир Вячеславович Малявин] (1)"));
 
         assert_eq("api.getAuthorsByGenreId()", api.getAuthorsByGenreId(24),
                 List.of("Дмитрий Михайлович Балашов",
@@ -54,32 +47,21 @@ public class Main {
                         "Дон Холлуэй",
                         "Петер Шрайнер"));
 
-        {
-            Wrapper.Result<List<String>> result = api.getBooksByGenreIdAndDate(24, "2024-06-0%");
-            assert_true("result.isSuccess()", result.isSuccess());
-            assert_eq("api.getBooksByGenreIdAndDate()", result.getValue(),
-                    List.of("Игра королев. Женщины, которые изменили историю Европы - Сара Гриствуд (2024-06-07) [2.67 MB]",
-                            "Рыцари, закованные в сталь - Говард Пайл (2024-06-01) [2.46 MB]"));
-        }
-        {
-            // Wrapper.Result<List<Value>> result = api.getGenresByMeta("Деловая
-            // литература");
-            // assert_true("result.isSuccess()", result.isSuccess());
+        assert_eq("api.getBooksByGenreIdAndDate()", api.getBooksByGenreIdAndDate(24, "2024-06-0%"),
+                List.of("Игра королев. Женщины, которые изменили историю Европы - Сара Гриствуд (2024-06-07) [2.67 MB]",
+                        "Рыцари, закованные в сталь - Говард Пайл (2024-06-01) [2.46 MB]"));
 
-            // assert_eq("api.getGenresByMeta()", result.getValue(),
-            // List.of(new Value(47, "Карьера, кадры"),
-            // new Value(44, "Маркетинг, PR"),
-            // new Value(48, "Финансы"),
-            // new Value(120, "Экономика")));
-
-            assert_eq("api.getGenresByMeta()", api.getGenresByMeta("Деловая литература"),
-                    List.of("Карьера, кадры",
-                            "Маркетинг, PR",
-                            "Финансы",
-                            "Экономика"));
-        }
+        assert_eq("api.getGenresByMeta()", api.getGenresByMeta("Деловая литература"),
+                List.of("Карьера, кадры",
+                        "Маркетинг, PR",
+                        "Финансы",
+                        "Экономика"));
         api.close();
     }
+
+//     left: '[Игра королев. Женщины, которые изменили историю Европы - Сара Гриствуд (2024-06-07) [2,67 MB], Рыцари, закованные в сталь - Говард Пайл (2024-06-01) [2,46 MB]]'
+//    right: '[Игра королев. Женщины, которые изменили историю Европы - Сара Гриствуд (2024-06-07) [2.67 MB], Рыцари, закованные в сталь - Говард Пайл (2024-06-01) [2.46 MB]]'
+
 
     public static void assert_true(String msg, boolean lhv) throws Exception {
         System.out.print(msg);

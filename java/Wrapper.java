@@ -37,11 +37,11 @@ public class Wrapper {
             return Wrapper.getAuthorsByLastName(this.ptr, name);
         }
 
-        public Wrapper.Result<List<String>> getSeriesBySerieName(String name) {
+        public Wrapper.Result<List<Serie>> getSeriesBySerieName(String name) {
             return Wrapper.getSeriesBySerieName(this.ptr, name);
         }
 
-        public Wrapper.Result<List<String>> getSeriesByGenreId(int id) {
+        public Wrapper.Result<List<Serie>> getSeriesByGenreId(int id) {
             return Wrapper.getSeriesByGenreId(this.ptr, id);
         }
 
@@ -49,11 +49,11 @@ public class Wrapper {
             return Wrapper.getAuthorsByGenreId(this.ptr, id);
         }
 
-        public Wrapper.Result<List<String>> getBooksByGenreIdAndDate(int id, String date) {
+        public Wrapper.Result<List<Book>> getBooksByGenreIdAndDate(int id, String date) {
             return Wrapper.getBooksByGenreIdAndDate(this.ptr, id, date);
         }
 
-        public Wrapper.Result<List<String>> getSeriesByAuthorIds(int fid, int mid, int lid) {
+        public Wrapper.Result<List<Serie>> getSeriesByAuthorIds(int fid, int mid, int lid) {
             return Wrapper.getSeriesByAuthorIds(this.ptr, fid, mid, lid);
         }
 
@@ -74,15 +74,15 @@ public class Wrapper {
 
     public static native Result<List<Author>> getAuthorsByLastName(long api, String name);
 
-    public static native Result<List<String>> getSeriesBySerieName(long api, String name);
+    public static native Result<List<Serie>> getSeriesBySerieName(long api, String name);
 
-    public static native Result<List<String>> getSeriesByGenreId(long api, int id);
+    public static native Result<List<Serie>> getSeriesByGenreId(long api, int id);
 
     public static native Result<List<Author>> getAuthorsByGenreId(long api, int id);
 
-    public static native Result<List<String>> getBooksByGenreIdAndDate(long api, int id, String date);
+    public static native Result<List<Book>> getBooksByGenreIdAndDate(long api, int id, String date);
 
-    public static native Result<List<String>> getSeriesByAuthorIds(long api, int fid, int mid, int lid);
+    public static native Result<List<Serie>> getSeriesByAuthorIds(long api, int fid, int mid, int lid);
 
     public static native Result<List<Value>> getGenresByMeta(long api, String name);
 
