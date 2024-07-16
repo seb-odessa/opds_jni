@@ -71,10 +71,10 @@ impl TryFrom<(&mut JNIEnv<'_>, anyhow::Error)> for JavaObject {
         Self::error(env, object)
     }
 }
-impl TryFrom<(JNIEnv<'_>, Vec<String>)> for JavaObject {
+impl TryFrom<(&mut JNIEnv<'_>, Vec<String>)> for JavaObject {
     type Error = anyhow::Error;
 
-    fn try_from((mut env, items): (JNIEnv<'_>, Vec<String>)) -> anyhow::Result<Self> {
+    fn try_from((env, items): (&mut JNIEnv<'_>, Vec<String>)) -> anyhow::Result<Self> {
         let class = env.find_class("java/util/ArrayList")?;
         let mut list = env.new_object(class, "()V", &[])?;
 
@@ -84,38 +84,38 @@ impl TryFrom<(JNIEnv<'_>, Vec<String>)> for JavaObject {
             env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
         }
 
-        Self::success(&mut env, list)
+        Self::success(env, list)
     }
 }
-impl TryFrom<(JNIEnv<'_>, Vec<Value>)> for JavaObject {
+impl TryFrom<(&mut JNIEnv<'_>, Vec<Value>)> for JavaObject {
     type Error = anyhow::Error;
 
-    fn try_from((mut env, items): (JNIEnv<'_>, Vec<Value>)) -> anyhow::Result<Self> {
+    fn try_from((env, items): (&mut JNIEnv<'_>, Vec<Value>)) -> anyhow::Result<Self> {
         let class = env.find_class("java/util/ArrayList")?;
         let mut list = env.new_object(class, "()V", &[])?;
 
         for item in items.iter() {
-            let value = Self::value(&mut env, item)?;
+            let value = Self::value(env, item)?;
             let args = [JValueGen::from(&value)];
             env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
         }
 
-        Self::success(&mut env, list)
+        Self::success(env, list)
     }
 }
-impl TryFrom<(JNIEnv<'_>, Vec<Author>)> for JavaObject {
+impl TryFrom<(&mut JNIEnv<'_>, Vec<Author>)> for JavaObject {
     type Error = anyhow::Error;
 
-    fn try_from((mut env, items): (JNIEnv<'_>, Vec<Author>)) -> anyhow::Result<Self> {
+    fn try_from((env, items): (&mut JNIEnv<'_>, Vec<Author>)) -> anyhow::Result<Self> {
         let class = env.find_class("java/util/ArrayList")?;
         let mut list = env.new_object(class, "()V", &[])?;
 
         for item in items.iter() {
-            let obj = Self::author(&mut env, item)?;
+            let obj = Self::author(env, item)?;
             let args = [JValueGen::from(&obj)];
             env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
         }
 
-        Self::success(&mut env, list)
+        Self::success(env, list)
     }
 }

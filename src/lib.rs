@@ -56,7 +56,7 @@ pub extern "C" fn Java_Wrapper_getAuthorsNextCharByPrefix(
 
     match api.authors_next_char_by_prefix(&prefix) {
         Ok(list) => {
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
@@ -85,7 +85,7 @@ pub extern "C" fn Java_Wrapper_getSeriesNextCharByPrefix(
 
     match api.series_next_char_by_prefix(&prefix) {
         Ok(list) => {
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
@@ -114,7 +114,7 @@ pub extern "C" fn Java_Wrapper_getAuthorsByLastName(
 
     match api.authors_by_last_name(&name) {
         Ok(list) => {
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
@@ -147,7 +147,7 @@ pub extern "C" fn Java_Wrapper_getSeriesBySerieName(
                 .into_iter()
                 .map(|a| format!("{a}"))
                 .collect::<Vec<_>>();
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
@@ -176,7 +176,7 @@ pub extern "C" fn Java_Wrapper_getSeriesByGenreId(
                 .into_iter()
                 .map(|a| format!("{a}"))
                 .collect::<Vec<_>>();
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
@@ -201,7 +201,7 @@ pub extern "C" fn Java_Wrapper_getAuthorsByGenreId(
 
     // let res = api
     //     .authors_by_genre_id(id as u32)
-    //     .and_then(|list| JavaObject::try_from((env, list)));
+    //     .and_then(|list| JavaObject::try_from((&mut env, list)));
 
     // match res {
     //     Ok(obj) => obj.ptr,
@@ -210,7 +210,7 @@ pub extern "C" fn Java_Wrapper_getAuthorsByGenreId(
 
     match api.authors_by_genre_id(id as u32) {
         Ok(list) => {
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
@@ -244,7 +244,7 @@ pub extern "C" fn Java_Wrapper_getBooksByGenreIdAndDate(
                 .into_iter()
                 .map(|a| format!("{a}"))
                 .collect::<Vec<_>>();
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
@@ -273,7 +273,7 @@ pub extern "C" fn Java_Wrapper_getGenresByMeta(
 
     match api.genres_by_meta(&name) {
         Ok(list) => {
-            JavaObject::try_from((env, list))
+            JavaObject::try_from((&mut env, list))
                 .inspect_err(|e| println!("{e}"))
                 .unwrap()
                 .ptr
