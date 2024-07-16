@@ -9,7 +9,7 @@ pub struct JavaObject {
     pub ptr: jobject,
 }
 impl JavaObject {
-    fn success(mut env: JNIEnv, object: JObject) -> anyhow::Result<Self> {
+    fn success(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
         let args = [JValueGen::from(&object)];
         let result = env.find_class("Wrapper$Result")?;
         let ptr = *env
@@ -84,7 +84,7 @@ impl TryFrom<(JNIEnv<'_>, Vec<String>)> for JavaObject {
             env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
         }
 
-        Self::success(env, list)
+        Self::success(&mut env, list)
     }
 }
 impl TryFrom<(JNIEnv<'_>, Vec<Value>)> for JavaObject {
@@ -100,7 +100,7 @@ impl TryFrom<(JNIEnv<'_>, Vec<Value>)> for JavaObject {
             env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
         }
 
-        Self::success(env, list)
+        Self::success(&mut env, list)
     }
 }
 impl TryFrom<(JNIEnv<'_>, Vec<Author>)> for JavaObject {
@@ -116,6 +116,6 @@ impl TryFrom<(JNIEnv<'_>, Vec<Author>)> for JavaObject {
             env.call_method(&mut list, "add", "(Ljava/lang/Object;)Z", &args)?;
         }
 
-        Self::success(env, list)
+        Self::success(&mut env, list)
     }
 }
