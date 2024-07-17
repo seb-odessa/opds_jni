@@ -1,3 +1,5 @@
+package org.opds.api.jni;
+import org.opds.api.models.*;
 import java.util.List;
 
 public class Wrapper {

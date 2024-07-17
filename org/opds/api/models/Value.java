@@ -1,3 +1,4 @@
+package org.opds.api.models;
 import java.util.Objects;
 
 public class Value {

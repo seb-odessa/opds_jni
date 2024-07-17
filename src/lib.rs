@@ -7,7 +7,7 @@ use result::JavaObject;
 mod result;
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_createOpdsApi(mut env: JNIEnv, _: JClass, path: JString) -> jlong {
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_createOpdsApi(mut env: JNIEnv, _: JClass, path: JString) -> jlong {
     let path: String = env
         .get_string(&path)
         .expect("Couldn't get java string!")
@@ -17,7 +17,7 @@ pub extern "C" fn Java_Wrapper_createOpdsApi(mut env: JNIEnv, _: JClass, path: J
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_destroyOpdsApi(_: JNIEnv, _: JClass, ptr: jlong) {
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_destroyOpdsApi(_: JNIEnv, _: JClass, ptr: jlong) {
     if ptr != 0 {
         unsafe {
             let _ = Box::from_raw(ptr as *mut OpdsApi);
@@ -26,7 +26,7 @@ pub extern "C" fn Java_Wrapper_destroyOpdsApi(_: JNIEnv, _: JClass, ptr: jlong) 
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_isReadonly(_: JNIEnv, _: JClass, ptr: jlong) -> jboolean {
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_isReadonly(_: JNIEnv, _: JClass, ptr: jlong) -> jboolean {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
 
     match api.is_readonly() {
@@ -42,7 +42,7 @@ pub extern "C" fn Java_Wrapper_isReadonly(_: JNIEnv, _: JClass, ptr: jlong) -> j
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getAuthorsNextCharByPrefix(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsNextCharByPrefix(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,
@@ -60,7 +60,7 @@ pub extern "C" fn Java_Wrapper_getAuthorsNextCharByPrefix(
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getSeriesNextCharByPrefix(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesNextCharByPrefix(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,
@@ -78,7 +78,7 @@ pub extern "C" fn Java_Wrapper_getSeriesNextCharByPrefix(
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getAuthorsByLastName(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByLastName(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,
@@ -96,7 +96,7 @@ pub extern "C" fn Java_Wrapper_getAuthorsByLastName(
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getSeriesBySerieName(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesBySerieName(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,
@@ -114,7 +114,7 @@ pub extern "C" fn Java_Wrapper_getSeriesBySerieName(
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getSeriesByGenreId(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesByGenreId(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,
@@ -129,7 +129,7 @@ pub extern "C" fn Java_Wrapper_getSeriesByGenreId(
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getAuthorsByGenreId(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByGenreId(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,
@@ -144,7 +144,7 @@ pub extern "C" fn Java_Wrapper_getAuthorsByGenreId(
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getBooksByGenreIdAndDate(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByGenreIdAndDate(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,
@@ -164,7 +164,7 @@ pub extern "C" fn Java_Wrapper_getBooksByGenreIdAndDate(
 }
 
 #[no_mangle]
-pub extern "C" fn Java_Wrapper_getGenresByMeta(
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getGenresByMeta(
     mut env: JNIEnv,
     _: JClass,
     ptr: jlong,

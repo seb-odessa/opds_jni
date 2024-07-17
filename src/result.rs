@@ -11,12 +11,12 @@ pub struct JavaObject {
 impl JavaObject {
     fn success(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
         let args = [JValueGen::from(&object)];
-        let result = env.find_class("Wrapper$Result")?;
+        let result = env.find_class("org/opds/api/jni/Wrapper$Result")?;
         let ptr = *env
             .call_static_method(
                 result,
                 "success",
-                "(Ljava/lang/Object;)LWrapper$Result;",
+                "(Ljava/lang/Object;)Lorg/opds/api/jni/Wrapper$Result;",
                 &args,
             )?
             .l()?;
@@ -26,12 +26,12 @@ impl JavaObject {
 
     fn error(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
         let args = [JValueGen::from(&object)];
-        let result = env.find_class("Wrapper$Result")?;
+        let result = env.find_class("org/opds/api/jni/Wrapper$Result")?;
         let ptr = *env
             .call_static_method(
                 result,
                 "error",
-                "(Ljava/lang/String;)LWrapper$Result;",
+                "(Ljava/lang/String;)Lorg/opds/api/jni/Wrapper$Result;",
                 &args,
             )?
             .l()?;
@@ -48,7 +48,7 @@ impl JavaObject {
         let id = item.id as i32;
         let value = JObject::from(env.new_string(item.value.clone())?);
         let args = [JValueGen::from(id), JValueGen::from(&value)];
-        let class = env.find_class("Value")?;
+        let class = env.find_class("org/opds/api/models/Value")?;
         let obj = env.new_object(class, "(ILjava/lang/String;)V", &args)?;
         Ok(obj)
     }
@@ -63,8 +63,12 @@ impl JavaObject {
             JValueGen::from(&mname),
             JValueGen::from(&lname),
         ];
-        let class = env.find_class("Author")?;
-        let obj = env.new_object(class, "(LValue;LValue;LValue;)V", &args)?;
+        let class = env.find_class("org/opds/api/models/Author")?;
+        let obj = env.new_object(
+            class,
+            "(Lorg/opds/api/models/Value;Lorg/opds/api/models/Value;Lorg/opds/api/models/Value;)V",
+            &args,
+        )?;
         Ok(obj)
     }
 
@@ -80,8 +84,12 @@ impl JavaObject {
             JValueGen::from(count),
             JValueGen::from(&author),
         ];
-        let class = env.find_class("Serie")?;
-        let obj = env.new_object(class, "(ILjava/lang/String;ILAuthor;)V", &args)?;
+        let class = env.find_class("org/opds/api/models/Serie")?;
+        let obj = env.new_object(
+            class,
+            "(ILjava/lang/String;ILorg/opds/api/models/Author;)V",
+            &args,
+        )?;
         Ok(obj)
     }
 
@@ -111,10 +119,10 @@ impl JavaObject {
             JValueGen::from(size),
             JValueGen::from(&added),
         ];
-        let class = env.find_class("Book")?;
+        let class = env.find_class("org/opds/api/models/Book")?;
         let obj = env.new_object(
             class,
-            "(ILjava/lang/String;IILAuthor;ILjava/lang/String;)V",
+            "(ILjava/lang/String;IILorg/opds/api/models/Author;ILjava/lang/String;)V",
             &args,
         )?;
         Ok(obj)
