@@ -76,6 +76,21 @@ public class Wrapper {
             return Wrapper.getAuthorByIds(this.ptr, fid, mid, lid);
         }
 
+        public Wrapper.Result<List<Book>> getBooksByAuthorIds(int fid, int mid, int lid) {
+            return Wrapper.getBooksByAuthorIds(this.ptr, fid, mid, lid);
+        }
+
+        public Wrapper.Result<List<Book>> getBooksByAuthorIdsWithoutSerie(int fid, int mid, int lid) {
+            return Wrapper.getBooksByAuthorIdsWithoutSerie(this.ptr, fid, mid, lid);
+        }
+
+        public Wrapper.Result<List<Book>> getBooksByAuthorIdsAndSerieId(int fid, int mid, int lid, int sid) {
+            return Wrapper.getBooksByAuthorIdsAndSerieId(this.ptr, fid, mid, lid, sid);
+        }
+
+        public Wrapper.Result<List<Book>> getBooksBySerieId(int sid) {
+            return Wrapper.getBooksBySerieId(this.ptr, sid);
+        }
     }
 
     public static native long createOpdsApi(String dbPath);
@@ -108,11 +123,13 @@ public class Wrapper {
 
     public static native Result<List<Book>> getBooksByGenreIdAndDate(long api, int id, String date);
 
-    // pub fn books_by_author_ids(fid, mid, lid) -> anyhow::Result<Vec<Book>>
-    // pub fn books_by_author_ids_and_serie_id(fid, mid, lid, sid) -> anyhow::Result<Vec<Book>>
-    // pub fn books_by_author_ids_without_serie(fid, mid, lid) -> anyhow::Result<Vec<Book>>
-    // pub fn books_by_serie_id(sid) -> anyhow::Result<Vec<Book>>
-    // pub fn books_by_genre_id_and_date(gid, date) -> anyhow::Result<Vec<Book>>
+    public static native Result<List<Book>> getBooksByAuthorIds(long api, int fid, int mid, int lid);
+
+    public static native Result<List<Book>> getBooksByAuthorIdsWithoutSerie(long api, int fid, int mid, int lid);
+
+    public static native Result<List<Book>> getBooksByAuthorIdsAndSerieId(long api, int fid, int mid, int lid, int sid);
+
+    public static native Result<List<Book>> getBooksBySerieId(long api, int sid);
 
     public static class Result<T> {
         private final T value;

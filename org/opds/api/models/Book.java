@@ -27,7 +27,7 @@ public class Book {
         StringBuilder sb = new StringBuilder();
 
         if (0 != idx) {
-            sb.append(idx + ' ');
+            sb.append(idx + " ");
         }
         sb.append(name + " - " + author + " (" + added + ") [" + format(size) + "]");
 

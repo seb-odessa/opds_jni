@@ -101,6 +101,26 @@ public class Main {
                 api.getAuthorByIds(50, 42, 281),
                 "Павел Сергеевич Иевлев");
 
+        assert_eq("api.getBooksByAuthorIds()",
+                api.getBooksByAuthorIds(43, 2, 184),
+                List.of("День писателя - Анна Велес (2024-06-18) [976.19 KB]",
+                        "2 Хозяин мрачного замка - Анна Велес (2024-06-05) [1.91 MB]"));
+
+        assert_eq("api.getBooksByAuthorIdsWithoutSerie()",
+                api.getBooksByAuthorIdsWithoutSerie(43, 2, 184),
+                List.of("День писателя - Анна Велес (2024-06-18) [976.19 KB]"));
+
+        assert_eq("api.getBooksByAuthorIdsAndSerieId()",
+                api.getBooksByAuthorIdsAndSerieId(43, 2, 184, 29),
+                List.of(
+                        "2 Хозяин мрачного замка - Анна Велес (2024-06-05) [1.91 MB]"));
+
+        assert_eq("api.getBooksBySerieId()",
+                api.getBooksBySerieId(29),
+                List.of(
+                        "2 Хозяин мрачного замка - Анна Велес (2024-06-05) [1.91 MB]"));
+
+        // Done
         api.close();
     }
 

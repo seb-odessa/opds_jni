@@ -261,3 +261,72 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByBooksIds(
         .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
         .ptr
 }
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByAuthorIds(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    fid: jint,
+    mid: jint,
+    lid: jint,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    api.books_by_author_ids(fid as u32, mid as u32, lid as u32)
+        .and_then(|author| JavaObject::try_from((&mut env, author)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByAuthorIdsWithoutSerie(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    fid: jint,
+    mid: jint,
+    lid: jint,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    api.books_by_author_ids_without_serie(fid as u32, mid as u32, lid as u32)
+        .and_then(|author| JavaObject::try_from((&mut env, author)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByAuthorIdsAndSerieId(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    fid: jint,
+    mid: jint,
+    lid: jint,
+    sid: jint,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    api.books_by_author_ids_and_serie_id(fid as u32, mid as u32, lid as u32, sid as u32)
+        .and_then(|author| JavaObject::try_from((&mut env, author)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksBySerieId(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    sid: jint,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    api.books_by_serie_id(sid as u32)
+        .and_then(|author| JavaObject::try_from((&mut env, author)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+
