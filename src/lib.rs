@@ -1,4 +1,4 @@
-use jni::objects::{JClass, JString};
+use jni::objects::{JClass, JIntArray, JString};
 use jni::sys::{jboolean, jint, jlong, jobject, JNI_FALSE, JNI_TRUE};
 use jni::JNIEnv;
 use opds_api::OpdsApi;
@@ -7,7 +7,11 @@ use result::JavaObject;
 mod result;
 
 #[no_mangle]
-pub extern "C" fn Java_org_opds_api_jni_Wrapper_createOpdsApi(mut env: JNIEnv, _: JClass, path: JString) -> jlong {
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_createOpdsApi(
+    mut env: JNIEnv,
+    _: JClass,
+    path: JString,
+) -> jlong {
     let path: String = env
         .get_string(&path)
         .expect("Couldn't get java string!")
@@ -26,7 +30,11 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_destroyOpdsApi(_: JNIEnv, _: JCl
 }
 
 #[no_mangle]
-pub extern "C" fn Java_org_opds_api_jni_Wrapper_isReadonly(_: JNIEnv, _: JClass, ptr: jlong) -> jboolean {
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_isReadonly(
+    _: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+) -> jboolean {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
 
     match api.is_readonly() {
@@ -129,6 +137,23 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesByGenreId(
 }
 
 #[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesByAuthorIds(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    fid: jint,
+    mid: jint,
+    lid: jint,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    api.series_by_author_ids(fid as u32, mid as u32, lid as u32)
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
 pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByGenreId(
     mut env: JNIEnv,
     _: JClass,
@@ -144,6 +169,23 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByGenreId(
 }
 
 #[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorByIds(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    fid: jint,
+    mid: jint,
+    lid: jint,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    api.author_by_ids(fid as u32, mid as u32, lid as u32)
+        .and_then(|author| JavaObject::try_from((&mut env, author)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
 pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByGenreIdAndDate(
     mut env: JNIEnv,
     _: JClass,
@@ -152,7 +194,6 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByGenreIdAndDate(
     date: JString,
 ) -> jobject {
     let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
-
 
     env.get_string(&date)
         .map_err(|e| anyhow::anyhow!("{e}"))
@@ -176,6 +217,46 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getGenresByMeta(
         .map_err(|e| anyhow::anyhow!("{e}"))
         .and_then(|str| Ok(Into::<String>::into(str)))
         .and_then(|arg| api.genres_by_meta(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getMetaGenres(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    api.meta_genres()
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+fn to_vec_u32(env: &mut JNIEnv, ints: JIntArray) -> anyhow::Result<Vec<u32>> {
+    let length = env.get_array_length(&ints)?;
+
+    let mut ids = vec![0; length as usize];
+
+    env.get_int_array_region(ints, 0, &mut ids)?;
+
+    Ok(ids.into_iter().map(|x| x as u32).collect())
+}
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByBooksIds(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    ids: JIntArray,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    to_vec_u32(&mut env, ids)
+        .and_then(|ids| api.authors_by_books_ids(ids))
         .and_then(|list| JavaObject::try_from((&mut env, list)))
         .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
         .ptr

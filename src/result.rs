@@ -217,3 +217,16 @@ impl TryFrom<(&mut JNIEnv<'_>, Vec<Book>)> for JavaObject {
         Self::success(env, list)
     }
 }
+impl TryFrom<(&mut JNIEnv<'_>, Option<Author>)> for JavaObject {
+    type Error = anyhow::Error;
+
+    fn try_from((env, author): (&mut JNIEnv<'_>, Option<Author>)) -> anyhow::Result<Self> {
+        if let Some(author) = author {
+            let obj = Self::author(env, &author)?;
+            Self::success(env, obj)
+        } else {
+            let obj = JObject::from(env.new_string("Not Found")?);
+            Self::error(env, obj)
+        }
+    }
+}

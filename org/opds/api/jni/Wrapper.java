@@ -1,4 +1,5 @@
 package org.opds.api.jni;
+
 import org.opds.api.models.*;
 import java.util.List;
 
@@ -51,6 +52,10 @@ public class Wrapper {
             return Wrapper.getAuthorsByGenreId(this.ptr, id);
         }
 
+        public Wrapper.Result<List<Author>> getAuthorsByBooksIds(int[] ids) {
+            return Wrapper.getAuthorsByBooksIds(this.ptr, ids);
+        }
+
         public Wrapper.Result<List<Book>> getBooksByGenreIdAndDate(int id, String date) {
             return Wrapper.getBooksByGenreIdAndDate(this.ptr, id, date);
         }
@@ -59,9 +64,18 @@ public class Wrapper {
             return Wrapper.getSeriesByAuthorIds(this.ptr, fid, mid, lid);
         }
 
+        public Wrapper.Result<List<Value>> getMetaGenres() {
+            return Wrapper.getMetaGenres(this.ptr);
+        }
+
         public Wrapper.Result<List<Value>> getGenresByMeta(String name) {
             return Wrapper.getGenresByMeta(this.ptr, name);
         }
+
+        public Wrapper.Result<Author> getAuthorByIds(int fid, int mid, int lid) {
+            return Wrapper.getAuthorByIds(this.ptr, fid, mid, lid);
+        }
+
     }
 
     public static native long createOpdsApi(String dbPath);
@@ -72,21 +86,33 @@ public class Wrapper {
 
     public static native Result<List<String>> getAuthorsNextCharByPrefix(long api, String prefix);
 
-    public static native Result<List<String>> getSeriesNextCharByPrefix(long api, String prefix);
-
     public static native Result<List<Author>> getAuthorsByLastName(long api, String name);
+
+    public static native Result<List<Author>> getAuthorsByGenreId(long api, int id);
+
+    public static native Result<List<Author>> getAuthorsByBooksIds(long api, int[] ids);
+
+    public static native Result<Author> getAuthorByIds(long api, int fid, int mid, int lid);
+
+    public static native Result<List<String>> getSeriesNextCharByPrefix(long api, String prefix);
 
     public static native Result<List<Serie>> getSeriesBySerieName(long api, String name);
 
     public static native Result<List<Serie>> getSeriesByGenreId(long api, int id);
 
-    public static native Result<List<Author>> getAuthorsByGenreId(long api, int id);
+    public static native Result<List<Serie>> getSeriesByAuthorIds(long api, int fid, int mid, int lid);
+
+    public static native Result<List<Value>> getMetaGenres(long api);
+
+    public static native Result<List<Value>> getGenresByMeta(long api, String name);
 
     public static native Result<List<Book>> getBooksByGenreIdAndDate(long api, int id, String date);
 
-    public static native Result<List<Serie>> getSeriesByAuthorIds(long api, int fid, int mid, int lid);
-
-    public static native Result<List<Value>> getGenresByMeta(long api, String name);
+    // pub fn books_by_author_ids(fid, mid, lid) -> anyhow::Result<Vec<Book>>
+    // pub fn books_by_author_ids_and_serie_id(fid, mid, lid, sid) -> anyhow::Result<Vec<Book>>
+    // pub fn books_by_author_ids_without_serie(fid, mid, lid) -> anyhow::Result<Vec<Book>>
+    // pub fn books_by_serie_id(sid) -> anyhow::Result<Vec<Book>>
+    // pub fn books_by_genre_id_and_date(gid, date) -> anyhow::Result<Vec<Book>>
 
     public static class Result<T> {
         private final T value;
