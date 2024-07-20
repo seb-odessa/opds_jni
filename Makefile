@@ -16,4 +16,4 @@ clean:
 targets:
 	cargo ndk -t armeabi-v7a build --release
 	cargo ndk -t arm64-v8a build --release
-	cargo ndk -t x86_64 build --release
+	cargo ndk -t x86 build --release
