@@ -120,6 +120,11 @@ public class Main {
                 List.of(
                         "2 Хозяин мрачного замка - Анна Велес (2024-06-05) [1.91 MB]"));
 
+        assert_eq("api.getAuthorsByPrefix()",
+                api.getAuthorsByPrefix("Александр"),
+                List.of("Александров", "Александрова"),
+                List.of());
+
         // Done
         api.close();
     }
@@ -172,6 +177,35 @@ public class Main {
             System.out.println("...Failed.");
             throw new Exception(res.getError());
         }
+    }
 
+    public static <T> void assert_eq(String msg, Wrapper.Result<Pair<List<T>>> res, List<String> first,
+            List<String> second) throws Exception {
+        System.out.print(msg);
+
+        if (res.isSuccess()) {
+            Pair<List<T>> pair = res.getValue();
+            List<String> fs = pair.first.stream().map(T::toString).collect(Collectors.toList());
+            if (first.equals(fs)) {
+                System.out.print("...");
+            } else {
+                System.out.println("...Failed.");
+                throw new Exception("\n left: '" + fs + "'\n not EQ\n right: '" + first +
+                        "'");
+            }
+
+            List<String> ss = pair.second.stream().map(T::toString).collect(Collectors.toList());
+            if (second.equals(ss)) {
+                System.out.println("...Ok");
+            } else {
+                System.out.println("...Failed.");
+                throw new Exception("\n left: '" + ss + "'\n not EQ\n right: '" + second +
+                        "'");
+            }
+
+        } else {
+            System.out.println("...Failed.");
+            throw new Exception(res.getError());
+        }
     }
 }

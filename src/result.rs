@@ -230,3 +230,34 @@ impl TryFrom<(&mut JNIEnv<'_>, Option<Author>)> for JavaObject {
         }
     }
 }
+impl TryFrom<(&mut JNIEnv<'_>, (Vec<String>,Vec<String>))> for JavaObject {
+    type Error = anyhow::Error;
+
+    fn try_from((env, (exact, nvc)): (&mut JNIEnv<'_>, (Vec<String>, Vec<String>))) -> anyhow::Result<Self> {
+        let class = env.find_class("java/util/ArrayList")?;
+        let mut exact_list = env.new_object(class, "()V", &[])?;
+        for item in exact {
+            let object = JObject::from(env.new_string(item)?);
+            let args = [JValueGen::from(&object)];
+            env.call_method(&mut exact_list, "add", "(Ljava/lang/Object;)Z", &args)?;
+        }
+
+        let class = env.find_class("java/util/ArrayList")?;
+        let mut nvc_list = env.new_object(class, "()V", &[])?;
+        for item in nvc {
+            let object = JObject::from(env.new_string(item)?);
+            let args = [JValueGen::from(&object)];
+            env.call_method(&mut nvc_list, "add", "(Ljava/lang/Object;)Z", &args)?;
+        }
+
+        let args = [JValueGen::from(&exact_list), JValueGen::from(&nvc_list)];
+        let class = env.find_class("org/opds/api/models/Pair")?;
+        let obj = env.new_object(
+            class,
+            "(Ljava/lang/Object;Ljava/lang/Object;)V",
+            &args,
+        )?;
+
+        Self::success(env, obj)
+    }
+}

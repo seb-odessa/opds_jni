@@ -329,4 +329,38 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksBySerieId(
         .ptr
 }
 
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByPrefix(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    prefix: JString,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
 
+    env.get_string(&prefix)
+        .map_err(|e| anyhow::anyhow!("{e}"))
+        .and_then(|str| Ok(Into::<String>::into(str)))
+        .and_then(|arg| api.search_authors_by_prefix(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesByPrefix(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    prefix: JString,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    env.get_string(&prefix)
+        .map_err(|e| anyhow::anyhow!("{e}"))
+        .and_then(|str| Ok(Into::<String>::into(str)))
+        .and_then(|arg| api.search_series_by_prefix(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
