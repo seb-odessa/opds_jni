@@ -1,4 +1,4 @@
 /target
-*.lock
+Cargo.lock
 *.class
 org_opds_api_jni_Wrapper.h
