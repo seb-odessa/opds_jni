@@ -174,4 +174,8 @@ public class Wrapper {
             return error;
         }
     }
+
+    public static native Result<List<String>> findLibraries(String root);
+
+    public static native Result<List<String>> findArchives(String root, int id);
 }
