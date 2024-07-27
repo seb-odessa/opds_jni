@@ -9,7 +9,7 @@ pub struct JavaObject {
     pub ptr: jobject,
 }
 impl JavaObject {
-    fn success(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
+    pub fn success(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
         let args = [JValueGen::from(&object)];
         let result = env.find_class("org/opds/api/jni/Wrapper$Result")?;
         let ptr = *env
@@ -24,7 +24,7 @@ impl JavaObject {
         Ok(Self { ptr })
     }
 
-    fn error(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
+    pub fn error(env: &mut JNIEnv, object: JObject) -> anyhow::Result<Self> {
         let args = [JValueGen::from(&object)];
         let result = env.find_class("org/opds/api/jni/Wrapper$Result")?;
         let ptr = *env
@@ -230,10 +230,12 @@ impl TryFrom<(&mut JNIEnv<'_>, Option<Author>)> for JavaObject {
         }
     }
 }
-impl TryFrom<(&mut JNIEnv<'_>, (Vec<String>,Vec<String>))> for JavaObject {
+impl TryFrom<(&mut JNIEnv<'_>, (Vec<String>, Vec<String>))> for JavaObject {
     type Error = anyhow::Error;
 
-    fn try_from((env, (exact, nvc)): (&mut JNIEnv<'_>, (Vec<String>, Vec<String>))) -> anyhow::Result<Self> {
+    fn try_from(
+        (env, (exact, nvc)): (&mut JNIEnv<'_>, (Vec<String>, Vec<String>)),
+    ) -> anyhow::Result<Self> {
         let class = env.find_class("java/util/ArrayList")?;
         let mut exact_list = env.new_object(class, "()V", &[])?;
         for item in exact {
@@ -252,12 +254,9 @@ impl TryFrom<(&mut JNIEnv<'_>, (Vec<String>,Vec<String>))> for JavaObject {
 
         let args = [JValueGen::from(&exact_list), JValueGen::from(&nvc_list)];
         let class = env.find_class("org/opds/api/models/Pair")?;
-        let obj = env.new_object(
-            class,
-            "(Ljava/lang/Object;Ljava/lang/Object;)V",
-            &args,
-        )?;
+        let obj = env.new_object(class, "(Ljava/lang/Object;Ljava/lang/Object;)V", &args)?;
 
         Self::success(env, obj)
     }
 }
+

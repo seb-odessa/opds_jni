@@ -1,9 +1,10 @@
-use jni::objects::{JClass, JIntArray, JString};
+use jni::objects::{JClass, JIntArray, JObject, JString};
 use jni::sys::{jboolean, jint, jlong, jobject, JNI_FALSE, JNI_TRUE};
 use jni::JNIEnv;
 use opds_api::OpdsApi;
-use opds_tools::{find_archives, find_library};
+use opds_tools::{find_archives, find_libraries};
 use result::JavaObject;
+use unzip::UnZip;
 
 mod result;
 
@@ -375,7 +376,7 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_findLibraries(
     env.get_string(&root)
         .map_err(|e| anyhow::anyhow!("{e}"))
         .and_then(|str| Ok(Into::<String>::into(str)))
-        .and_then(|root| find_library(&root).map_err(|e| anyhow::anyhow!("{e}")))
+        .and_then(|root| find_libraries(&root).map_err(|e| anyhow::anyhow!("{e}")))
         .and_then(|paths| JavaObject::try_from((&mut env, paths)))
         .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
         .ptr
@@ -395,4 +396,35 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_findArchives(
         .and_then(|paths| JavaObject::try_from((&mut env, paths)))
         .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
         .ptr
+}
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_extractFile(
+    mut env: JNIEnv,
+    _: JClass,
+    archive: JString,
+    file: JString,
+    destination: JString,
+) -> jobject {
+    extract_file(&mut env, archive, file, destination)
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+fn extract_file<'a>(
+    env: &mut JNIEnv<'a>,
+    archive: JString,
+    file: JString,
+    destination: JString,
+) -> anyhow::Result<JavaObject> {
+    let archive: String = env.get_string(&archive)?.into();
+    let file: String = env.get_string(&file)?.into();
+    let destination: String = env.get_string(&destination)?.into();
+
+    UnZip::try_from(archive, destination)?
+        .file(file)
+        .map_err(|e| anyhow::anyhow!("{e}"))?;
+
+    let object = JObject::from(env.new_string("Success")?);
+    JavaObject::success(env, object)
 }
