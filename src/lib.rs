@@ -1,3 +1,10 @@
+#[macro_use]
+extern crate log;
+extern crate android_logger;
+
+use log::LevelFilter;
+use android_logger::{Config,FilterBuilder};
+
 use jni::objects::{JClass, JIntArray, JObject, JString};
 use jni::sys::{jboolean, jint, jlong, jobject, JNI_FALSE, JNI_TRUE};
 use jni::JNIEnv;
@@ -7,6 +14,23 @@ use result::JavaObject;
 use unzip::UnZip;
 
 mod result;
+
+const TAG: &'static str = "org.opds.client.JNI";
+
+
+#[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_initLogging(_: JNIEnv, _: JClass) {
+    android_logger::init_once(
+        Config::default()
+            .with_max_level(LevelFilter::Trace)
+            .with_tag(TAG)
+            .with_filter( // configure messages for specific crate
+                FilterBuilder::new()
+                    .parse("debug,hello::crate=error")
+                    .build())
+    );
+    info!("initLogging");
+}
 
 #[no_mangle]
 pub extern "C" fn Java_org_opds_api_jni_Wrapper_createOpdsApi(

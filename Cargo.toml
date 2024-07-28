@@ -10,6 +10,8 @@ path = "src/lib.rs"
 [dependencies]
 anyhow = "1.0"
 jni = "0.21"
+log = "0.4"
+android_logger = "0.14"
 opds_api = { git = "https://github.com/seb-odessa/opds_api.git", branch = "main", package = "opds_api" }
 opds_tools = { git = "https://github.com/seb-odessa/opds_tools.git", branch = "main", package = "opds_tools" }
 unzip = { git = "https://github.com/seb-odessa/unzip.git", branch = "main", package = "unzip" }
