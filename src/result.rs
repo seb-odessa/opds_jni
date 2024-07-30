@@ -230,6 +230,19 @@ impl TryFrom<(&mut JNIEnv<'_>, Option<Author>)> for JavaObject {
         }
     }
 }
+impl TryFrom<(&mut JNIEnv<'_>, Option<Book>)> for JavaObject {
+    type Error = anyhow::Error;
+
+    fn try_from((env, book): (&mut JNIEnv<'_>, Option<Book>)) -> anyhow::Result<Self> {
+        if let Some(book) = book {
+            let obj = Self::book(env, &book)?;
+            Self::success(env, obj)
+        } else {
+            let obj = JObject::from(env.new_string("Not Found")?);
+            Self::error(env, obj)
+        }
+    }
+}
 impl TryFrom<(&mut JNIEnv<'_>, (Vec<String>, Vec<String>))> for JavaObject {
     type Error = anyhow::Error;
 
