@@ -305,6 +305,22 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getAuthorsByBooksIds(
 }
 
 #[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesByIds(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    ids: JIntArray,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    to_vec_u32(&mut env, ids)
+        .and_then(|ids| api.series_by_ids(ids))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
 pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByAuthorIds(
     mut env: JNIEnv,
     _: JClass,

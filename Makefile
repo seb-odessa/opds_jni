@@ -1,10 +1,11 @@
 .PHONY: run build clean
 
-TARGET = libopds_jni
+LIBRARY = libopds_jni
 LIBS = app/jni/libs
+PROJECT = ~/AndroidStudioProjects/OpdsClient/app
 
 run:
-	java -Djava.library.path=target/debug -cp classes org.opds.api.tests.Main
+	java -Djava.library.path=LIBRARY/debug -cp classes org.opds.api.tests.Main
 
 build:
 	cargo build
@@ -19,12 +20,13 @@ clean:
 
 targets:
 	cargo update
-	cargo ndk -t armeabi-v7a build --release
 	cargo ndk -t arm64-v8a build --release
+	mkdir -p $(PROJECT)/$(LIBS)/arm64-v8a
+	rsync -uP  target/aarch64-linux-android/release/$(LIBRARY).so $(PROJECT)/$(LIBS)/arm64-v8a/
+	cargo ndk -t armeabi-v7a build --release
+	mkdir -p $(PROJECT)/$(LIBS)/armeabi-v7a
+	rsync -uP  target/armv7-linux-androideabi/release/$(LIBRARY).so $(PROJECT)/$(LIBS)/armeabi-v7a/
 	cargo ndk -t x86 build --release
-	mkdir -p $(LIBS)/arm64-v8a
-	cp ./target/aarch64-linux-android/release/$(TARGET).so ./$(LIBS)/arm64-v8a/
-	mkdir -p $(LIBS)/armeabi-v7a
-	cp ./target/armv7-linux-androideabi/release/$(TARGET).so ./$(LIBS)/armeabi-v7a/
-	mkdir -p $(LIBS)/x86
-	cp ./target/i686-linux-android/release/$(TARGET).so ./$(LIBS)/x86/
+	mkdir -p $(PROJECT)/$(LIBS)/x86
+	rsync -uP  target/i686-linux-android/release/$(LIBRARY).so $(PROJECT)/$(LIBS)/x86/
+
