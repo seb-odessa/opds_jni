@@ -166,6 +166,24 @@ pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesBySerieName(
 }
 
 #[no_mangle]
+pub extern "C" fn Java_org_opds_api_jni_Wrapper_getBooksByBookTitle(
+    mut env: JNIEnv,
+    _: JClass,
+    ptr: jlong,
+    name: JString,
+) -> jobject {
+    let api: &OpdsApi = unsafe { &*(ptr as *const OpdsApi) };
+
+    env.get_string(&name)
+        .map_err(|e| anyhow::anyhow!("{e}"))
+        .and_then(|str| Ok(Into::<String>::into(str)))
+        .and_then(|arg| api.books_by_book_title(&arg))
+        .and_then(|list| JavaObject::try_from((&mut env, list)))
+        .unwrap_or_else(|err| JavaObject::try_from((&mut env, err)).unwrap())
+        .ptr
+}
+
+#[no_mangle]
 pub extern "C" fn Java_org_opds_api_jni_Wrapper_getSeriesByGenreId(
     mut env: JNIEnv,
     _: JClass,
