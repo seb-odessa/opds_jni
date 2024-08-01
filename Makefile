@@ -2,7 +2,7 @@
 
 LIBRARY = libopds_jni
 LIBS = app/jni/libs
-PROJECT = ~/AndroidStudioProjects/OpdsClient/app
+PROJECT = ~/AndroidStudioProjects/OpdsClient
 
 run:
 	java -Djava.library.path=LIBRARY/debug -cp classes org.opds.api.tests.Main
